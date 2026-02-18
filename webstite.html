@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Grade 12 Statistics - Karl Pearson</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 30px; background-color: #f4f4f9; }
+        
+        /* New Graphical Header for Ravi */
+        .ravi-header {
+            background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .ravi-header h1 {
+            margin: 0;
+            font-size: 3em;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .ravi-header p {
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        table { border-collapse: collapse; width: 100%; margin-top: 15px; background: white; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .total-row { font-weight: bold; background-color: #e2e3e5 !important; }
+        .result-box { margin-top: 20px; padding: 15px; border-left: 5px solid #28a745; background: #e9f7ef; font-size: 1.2em; }
+        input[type="number"] { width: 80px; padding: 5px; }
+        button { padding: 8px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; transition: 0.3s; }
+        button:hover { background: #0056b3; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+<div class="ravi-header">
+    <h1>Welcome to Ravi's World</h1>
+    <p>RADHE RADHE </p>
+</div>
+
+<div class="container">
+    <h2>Karl Pearson's Correlation Coefficient Calculator</h2>
+    
+    <label>Number of pairs (n): </label>
+    <input type="number" id="nValue" value="5" min="1">
+    <button onclick="generateInputs()">Set Rows</button>
+
+    <div id="inputArea" style="margin-top:20px;"></div>
+    <br>
+    <button onclick="calculate()" style="background-color: #28a745;">Calculate Result</button>
+
+    <div id="outputArea"></div>
+</div>
+
+<script>
+    function generateInputs() {
+        let n = parseInt(document.getElementById('nValue').value);
+        let html = "<table><tr><th>#</th><th>X</th><th>Y</th></tr>";
+        for (let i = 0; i < n; i++) {
+            html += `<tr>
+                <td>${i+1}</td>
+                <td><input type="number" class="xInput" value="0"></td>
+                <td><input type="number" class="yInput" value="0"></td>
+            </tr>`;
+        }
+        html += "</table>";
+        document.getElementById('inputArea').innerHTML = html;
+        document.getElementById('outputArea').innerHTML = ""; 
+    }
+
+    function calculate() {
+        let xElements = document.getElementsByClassName('xInput');
+        let yElements = document.getElementsByClassName('yInput');
+        let n = xElements.length;
+
+        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+        
+        let tableHtml = "<h3>Step 1: Detailed Calculation Table</h3>";
+        tableHtml += "<table><tr><th>X</th><th>Y</th><th>X²</th><th>Y²</th><th>XY</th></tr>";
+
+        for (let i = 0; i < n; i++) {
+            let x = parseFloat(xElements[i].value) || 0;
+            let y = parseFloat(yElements[i].value) || 0;
+
+            let x2 = x * x;
+            let y2 = y * y;
+            let xy = x * y;
+
+            sumX += x;
+            sumY += y;
+            sumX2 += x2;
+            sumY2 += y2;
+            sumXY += xy;
+
+            tableHtml += `<tr>
+                <td>${x}</td><td>${y}</td><td>${x2}</td><td>${y2}</td><td>${xy}</td>
+            </tr>`;
+        }
+
+        tableHtml += `<tr class="total-row">
+            <td>ΣX = ${sumX}</td>
+            <td>ΣY = ${sumY}</td>
+            <td>ΣX² = ${sumX2}</td>
+            <td>ΣY² = ${sumY2}</td>
+            <td>ΣXY = ${sumXY}</td>
+        </tr></table>`;
+
+        let numerator = (n * sumXY) - (sumX * sumY);
+        let denPart1 = (n * sumX2) - (sumX * sumX);
+        let denPart2 = (n * sumY2) - (sumY * sumY);
+        let denominator = Math.sqrt(denPart1 * denPart2);
+
+        let r = denominator !== 0 ? (numerator / denominator) : 0;
+
+        let resultHtml = tableHtml;
+        resultHtml += `
+            <div class="result-box">
+                <strong>Final Result:</strong><br>
+                Coefficient of Correlation (r) = <b>${r.toFixed(4)}</b>
+            </div>
+        `;
+
+        document.getElementById('outputArea').innerHTML = resultHtml;
+    }
+
+    window.onload = generateInputs;
+</script>
+
+</body>
+</html>
